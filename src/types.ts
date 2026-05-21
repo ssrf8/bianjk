@@ -49,6 +49,7 @@ export interface PnlPoint {
 
 export interface PnlSummary {
   today: number;
+  todayRealized: number;
   sevenDays: number;
   thirtyDays: number;
   realized: number;

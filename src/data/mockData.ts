@@ -120,6 +120,7 @@ export const openOrders: OpenOrder[] = [
 
 export const pnlSummary: PnlSummary = {
   today: 42.63,
+  todayRealized: 214.88,
   sevenDays: 1898.44,
   thirtyDays: 5476.2,
   realized: 6280.72,

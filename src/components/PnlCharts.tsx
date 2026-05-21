@@ -20,9 +20,10 @@ interface PnlChartsProps {
 
 export function PnlCharts({ summary, data }: PnlChartsProps) {
   const metrics = [
-    ["今日", summary.today],
-    ["7 日", summary.sevenDays],
-    ["30 日", summary.thirtyDays],
+    ["今日盈亏", summary.today],
+    ["今日已实现", summary.todayRealized],
+    ["7 日盈亏", summary.sevenDays],
+    ["30 日盈亏", summary.thirtyDays],
     ["已实现", summary.realized],
     ["未实现", summary.unrealized],
     ["手续费", summary.fees],
@@ -32,7 +33,7 @@ export function PnlCharts({ summary, data }: PnlChartsProps) {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-5">
         {metrics.map(([label, value]) => (
           <div key={label} className="rounded-md bg-panel2 p-2.5">
             <div className="metric-label mb-1">{label}</div>

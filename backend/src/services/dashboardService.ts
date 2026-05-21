@@ -274,10 +274,11 @@ const getRealMarkets = async (symbols: string[]) => {
 };
 
 const getRealTrades = async (symbols: string[]) => {
+  const startTime = Date.now() - 30 * dayMs;
   const rows = await Promise.all(
     symbols.slice(0, 6).map((symbol) =>
       binanceClient
-        .signedRequest<BinanceTrade[]>("GET", "/fapi/v1/userTrades", { symbol, limit: 20 })
+        .signedRequest<BinanceTrade[]>("GET", "/fapi/v1/userTrades", { symbol, startTime, limit: 50 })
         .catch(() => []),
     ),
   );
@@ -365,6 +366,7 @@ export const getDashboardSnapshot = async () => {
       openOrders,
       pnlSummary: {
         today: unrealized,
+        todayRealized: 214.88,
         sevenDays: 1898.44,
         thirtyDays: 5476.2,
         realized: 6280.72,
@@ -407,10 +409,14 @@ export const getDashboardSnapshot = async () => {
     getRealOpenOrders(),
     getRealIncome(),
   ]);
+  const incomeSymbols = incomeRows
+    .map((item) => item.symbol)
+    .filter((symbol): symbol is string => Boolean(symbol));
   const symbols = Array.from(
     new Set([
       ...positions.map((item) => item.symbol),
       ...openOrders.map((item) => item.symbol),
+      ...incomeSymbols,
       ...config.monitorSymbols,
     ]),
   );
@@ -421,6 +427,7 @@ export const getDashboardSnapshot = async () => {
   const unrealized = positions.reduce((sum, item) => sum + item.unrealizedPnl, 0);
   const now = Date.now();
   const todayStart = new Date().setHours(0, 0, 0, 0);
+  const todayRealized = sumIncome(incomeRows, todayStart, ["REALIZED_PNL"]);
   const realized = sumIncome(incomeRows, now - 30 * dayMs, ["REALIZED_PNL"]);
   const fees = sumIncome(incomeRows, now - 30 * dayMs, ["COMMISSION"]);
   const funding = sumIncome(incomeRows, now - 30 * dayMs, ["FUNDING_FEE"]);
@@ -445,6 +452,7 @@ export const getDashboardSnapshot = async () => {
     openOrders,
     pnlSummary: {
       today: pnlToday,
+      todayRealized,
       sevenDays: pnl7d,
       thirtyDays: pnl30d,
       realized,
